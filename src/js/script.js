@@ -63,9 +63,11 @@
       thisProduct.data = data;
 
       thisProduct.renderInMenu();
+      console.log('/----------------/ new Product: ', thisProduct);
       thisProduct.getElements();
       thisProduct.initAccordian();
       thisProduct.initOrderForm();
+      thisProduct.initAmountWidget();
       thisProduct.processOrder();
 
     }
@@ -93,8 +95,10 @@
       thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton); //Przycisk dodawania do koszyka.
       thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem); //Cena produktu.
       thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper); //Pojedynczy element o slektorze '.product__images'
+      thisProduct.amountWidgetElem = thisProduct.element.querySelector(select.menuProduct.amountWidget); //Pojedynczy element pasujacy do selektora '.widget-amount'
     }
-    //************************************************************** */
+    //******************************* PO ROZWINIECIU POKARZ OPCJE PRODUKTU ******************************* */
+
     //Metoda, ktora po kliknieciu bedzie pokazywala opcje produktu, wybor ilosci i button dodaj do koszyka.
     initAccordian(){
       const thisProduct = this;
@@ -122,7 +126,8 @@
       });
       // console.log(clickableTriggers);
     }
-    //************************************************************** */
+    //****************************** NASLUCHUJEMY NA ZMIANY W FORMULARZU ******************************** */
+
     //Metoda reagujaca na zmiany w formularzu zamowienia produktu
     initOrderForm(){
       const thisProduct = this;
@@ -144,7 +149,8 @@
         thisProduct.processOrder();
       });
     }
-    //************************************************************** */
+    //********************************* OBLICZAMY WARTOSC PRODUKTU ***************************** */
+
     //Metoda sluzaca do przeliczania / obliczania wartosci zamowionego produktu.
     processOrder(){
       const thisProduct = this;
@@ -186,8 +192,9 @@
             /* END ELSE IF: if option is not selected and option is default */
           }
 
+          //***************************** OBSLUGA NAKLADANIA OBRAZKOW ********************************* */
+
           const selectedImg = thisProduct.imageWrapper.querySelectorAll('.' + paramId + '-' + optionId);
-          console.log(selectedImg);
 
           if (optionSelected) {
 
@@ -211,8 +218,61 @@
       /* set the contents of thisProduct.priceElem to be the value of variable price */
       thisProduct.priceElem.textContent = price;
     }
+    //***************************** TWORZY INSTANCJE KLASY AmountWidget I ZAPISUJE JA WE WLASCIWOSCI PRODUKTU ********************************* */
+
+    initAmountWidget(){
+      const thisProduct = this;
+
+      thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
+    }
   }
+
+  //***************************** WIDGET ILOSCI ********************************* */
+
+  class AmountWidget{
+
+    constructor(element){
+      const thisWidget = this;
+
+      thisWidget.getElements(element);
+      thisWidget.setValue(thisWidget.input.value);
+
+      console.log('AmountWidget:', thisWidget);
+      console.log('constructor arguments:\n', element);
+    }
+
+    getElements(element){
+      const thisWidget = this;
+
+      thisWidget.element = element;
+      thisWidget.input = thisWidget.element.querySelector(select.widgets.amount.input);
+      thisWidget.linkDecrease = thisWidget.element.querySelector(select.widgets.amount.linkDecrease);
+      thisWidget.linkIncrease = thisWidget.element.querySelector(select.widgets.amount.linkIncrease);
+    }
+
+    setValue(value){
+      const thisWidget = this;
+
+      const newValue = parseInt(value);
+
+      /** TODO: Add validation */
+
+      thisWidget.value = newValue;
+      thisWidget.input.value = thisWidget.value;
+    }
+
+    initActions() {
+      const thisWidget = this;
+      console.log(thisWidget);
+
+    }
+
+  }
+
   //************************************************************** */
+
+  //************************************************************** */
+
   const app = {
     initMenu: function(){
       const thisApp = this;
@@ -229,12 +289,11 @@
 
     init: function(){
       const thisApp = this;
-      console.log('*** App starting ***');
-      console.log('thisApp:', thisApp);
-      console.log('classNames:', classNames);
-      console.log('settings:', settings);
-      console.log('templates:', templates);
-      console.log('************************************');
+      // console.log('*** App starting ***');
+      // console.log('thisApp:', thisApp);
+      // console.log('classNames:', classNames);
+      // console.log('settings:', settings);
+      // console.log('templates:', templates);
 
       thisApp.initData();
       thisApp.initMenu();
