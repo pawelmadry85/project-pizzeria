@@ -47,7 +47,7 @@
       defaultValue: 1,
       defaultMin: 1,
       defaultMax: 9,
-    }
+    },
   };
 
   const templates = {
@@ -63,7 +63,6 @@
       thisProduct.data = data;
 
       thisProduct.renderInMenu();
-      console.log('/----------------/ new Product: ', thisProduct);
       thisProduct.getElements();
       thisProduct.initAccordian();
       thisProduct.initOrderForm();
@@ -215,6 +214,9 @@
         /* END LOOP: for each paramId in thisProduct.data.params */
       }
 
+      /** multiply price by amount */
+      price *= thisProduct.amountWidget.value;
+
       /* set the contents of thisProduct.priceElem to be the value of variable price */
       thisProduct.priceElem.textContent = price;
     }
@@ -224,6 +226,12 @@
       const thisProduct = this;
 
       thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
+
+      // console.log(thisProduct.amountWidget);
+
+      thisProduct.amountWidgetElem.addEventListener('updated', function(){
+        thisProduct.processOrder();
+      });
     }
   }
 
@@ -235,10 +243,12 @@
       const thisWidget = this;
 
       thisWidget.getElements(element);
-      thisWidget.setValue(thisWidget.input.value);
-
-      console.log('AmountWidget:', thisWidget);
-      console.log('constructor arguments:\n', element);
+      thisWidget.value = settings.amountWidget.defaultValue;
+      console.log(thisWidget.value);
+      thisWidget.setValue(thisWidget.input.value); //wywolanie metody setValue
+      thisWidget.initActions(); //wywolanie metody initActions
+      // console.log('AmountWidget:', thisWidget);
+      // console.log('constructor arguments:\n', element);
     }
 
     getElements(element){
@@ -252,24 +262,45 @@
 
     setValue(value){
       const thisWidget = this;
-
-      const newValue = parseInt(value);
+      const newValue = parseInt(value); //zapisujemy do zmiennej newValue wartosc przekazanego argumentu po przekonwertowaniu go na liczbe na wypadek gdyby argument byl tekstem
 
       /** TODO: Add validation */
+      if(newValue != thisWidget.value && newValue >= settings.amountWidget.defaultMin && newValue <= settings.amountWidget.defaultMax) {
 
-      thisWidget.value = newValue;
-      thisWidget.input.value = thisWidget.value;
+        thisWidget.value = newValue; //zapisanie wartosci po przejsciu walidacji jako thisWidget.value
+        thisWidget.announce();
+      }
+      thisWidget.input.value = thisWidget.value; //ustawienie nowej wartosci inputa - wyswietlenie na stronie
     }
 
     initActions() {
       const thisWidget = this;
-      console.log(thisWidget);
 
+      thisWidget.input.addEventListener('change', function(){
+        thisWidget.setValue(thisWidget.input.value);
+      });
+
+      thisWidget.linkDecrease.addEventListener('click', function(event){
+        event.preventDefault();
+        thisWidget.setValue(thisWidget.value - 1);
+      });
+
+      thisWidget.linkIncrease.addEventListener('click', function(event){
+        event.preventDefault();
+        thisWidget.setValue(thisWidget.value + 1);
+      });
+      console.log(thisWidget);
+    }
+
+    announce(){
+      const thisWidget = this;
+
+      // storzenie wslasnego eventu 'updated'
+      const event = new Event('updated');
+      thisWidget.element.dispatchEvent(event);
     }
 
   }
-
-  //************************************************************** */
 
   //************************************************************** */
 
