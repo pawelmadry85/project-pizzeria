@@ -108,14 +108,20 @@
     //Metoda, ktora bedzie renderowac (tworzyc) kod pojedynczego produktu na stronie.
     renderInMenu(){
       const thisProduct = this;
+
       /** generate HTML based on template */
       const generatedHTML = templates.menuProduct(thisProduct.data);
+
       /** create element using utils.createElementFromHTML */
       thisProduct.element = utils.createDOMFromHTML(generatedHTML);
+
       /** find menu container */
       const menuContainer = document.querySelector(select.containerOf.menu);
+
       /** add element to menu */
       menuContainer.appendChild(thisProduct.element);
+
+
     }
     //************************************************************** */
     //Metoda odnajdujaca elementy w kontenerze produktu. Spis tresci.
@@ -130,8 +136,7 @@
       thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper); //Pojedynczy element o slektorze '.product__images'
       thisProduct.amountWidgetElem = thisProduct.element.querySelector(select.menuProduct.amountWidget); //Pojedynczy element pasujacy do selektora '.widget-amount'
     }
-    //******************************* PO ROZWINIECIU POKARZ OPCJE PRODUKTU ******************************* */
-
+    //************************************************************** */
     //Metoda, ktora po kliknieciu bedzie pokazywala opcje produktu, wybor ilosci i button dodaj do koszyka.
     initAccordian(){
       const thisProduct = this;
@@ -159,7 +164,7 @@
       });
       // console.log(clickableTriggers);
     }
-    //****************************** NASLUCHUJEMY NA ZMIANY W FORMULARZU ******************************** */
+    //************************************************************** */
 
     //Metoda reagujaca na zmiany w formularzu zamowienia produktu
     initOrderForm(){
@@ -180,16 +185,18 @@
       thisProduct.cartButton.addEventListener('click', function(event){
         event.preventDefault();
         thisProduct.processOrder();
+        thisProduct.addToCart();
       });
     }
-    //********************************* OBLICZAMY WARTOSC PRODUKTU ***************************** */
-
+    //************************************************************** */
     //Metoda sluzaca do przeliczania / obliczania wartosci zamowionego produktu.
     processOrder(){
       const thisProduct = this;
 
       /* read all data from the form (using utils.serializeFormToObject) and save it to const formData */
       const formData = utils.serializeFormToObject(thisProduct.form);
+
+      thisProduct.params = {};
 
       /* set variable price to equal thisProduct.data.price */
       let price = thisProduct.data.price;
@@ -229,15 +236,26 @@
 
           const selectedImg = thisProduct.imageWrapper.querySelectorAll('.' + paramId + '-' + optionId);
 
-          if (optionSelected) {
+          if(optionSelected){
 
-            for (let image of selectedImg) {
+            if(!thisProduct.params[paramId]){
+
+              thisProduct.params[paramId] = {
+                label: param.label,
+                options: {},
+              };
+            }
+
+            thisProduct.params[paramId].options[optionId] = option.label;
+            // console.log(thisProduct.params);
+
+            for(let image of selectedImg){
               image.classList.add(classNames.menuProduct.imageVisible);
             }
 
-          } else {
+          } else{
 
-            for (let image of selectedImg) {
+            for(let image of selectedImg){
               image.classList.remove(classNames.menuProduct.imageVisible);
             }
           }
@@ -248,13 +266,16 @@
         /* END LOOP: for each paramId in thisProduct.data.params */
       }
 
-      /** multiply price by amount */
-      price *= thisProduct.amountWidget.value;
+      /** multiply price by amount */ //cena za calosc
+      // price *= thisProduct.amountWidget.value;
+      thisProduct.priceSingle = price; //cena jednej sztuki
+      thisProduct.price = thisProduct.priceSingle * thisProduct.amountWidget.value; //cena za calosc = cena jednej sztuki * cyfra w widgecie amountWidget
 
-      /* set the contents of thisProduct.priceElem to be the value of variable price */
-      thisProduct.priceElem.textContent = price;
+      /* set the contents of thisProduct.priceElem to be the value of variable price */ //cena za sztuke
+      // thisProduct.priceElem.textContent = price;
+      thisProduct.priceElem.innerHTML = thisProduct.price;
     }
-    //***************************** TWORZY INSTANCJE KLASY AmountWidget I ZAPISUJE JA WE WLASCIWOSCI PRODUKTU ********************************* */
+    //************************************************************** */
     initAmountWidget(){
       const thisProduct = this;
 
@@ -265,6 +286,15 @@
       thisProduct.amountWidgetElem.addEventListener('updated', function(){
         thisProduct.processOrder();
       });
+    }
+    //************************************************************** */
+    addToCart(){
+      const thisProduct = this;
+
+      thisProduct.name = thisProduct.data.name;
+      thisProduct.amount = thisProduct.amountWidget.value;
+
+      app.cart.add(thisProduct); //przekazanie calej instancji jako argumentu metody app.cart.add, metoda add otrzymuje odwolanie do tej instancji czyli mozliwosc odczytywania wlasciwosci i wykonywania jej metod.
     }
   }
 
@@ -339,7 +369,7 @@
       thisCart.getElements(element);
       thisCart.initActions();
 
-      console.log('new Cart: ', thisCart);
+      // console.log('new Cart: ', thisCart);
     }
 
     getElements(element){
@@ -347,8 +377,8 @@
 
       thisCart.dom = {}; //tworzymy obiekt thisCart.dom do przechowywania wszystkich elementow DOM wyszukanych w komponencie koszyka
       thisCart.dom.wrapper = element;
-      thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
-
+      thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger); //wyszukanie elementu ktoremu dodajemy listener eventu click
+      thisCart.dom.productList = thisCart.dom.wrapper.querySelector(select.cart.productList); //wyszukanie listy produktow w koszyku
     }
 
     initActions(){
@@ -357,7 +387,22 @@
       thisCart.dom.toggleTrigger.addEventListener('click', function(){
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
       });
+    }
 
+    add(menuProduct){
+      const thisCart = this;
+
+      /** generate HTML based on template */
+      const generatedHTML = templates.cartProduct(menuProduct);
+      // console.log(generatedHTML);
+
+      /** create element using utils.createElementFromHTML */
+      const generatedDOM = utils.createDOMFromHTML(generatedHTML);
+      // console.log(generatedDOM);
+
+      thisCart.dom.productList.appendChild(generatedDOM);
+
+      // console.log('adding product: ', menuProduct);
     }
   }
 
@@ -375,12 +420,6 @@
       thisApp.data = dataSource;
     },
 
-    initCart: function(){
-      const thisApp = this;
-      const cartElem = document.querySelector(select.containerOf.cart);
-      thisApp.cart = new Cart(cartElem);
-    },
-
     init: function(){
       const thisApp = this;
       // console.log('*** App starting ***');
@@ -392,6 +431,12 @@
       thisApp.initData();
       thisApp.initMenu();
       thisApp.initCart();
+    },
+
+    initCart: function(){
+      const thisApp = this;
+      const cartElem = document.querySelector(select.containerOf.cart);
+      thisApp.cart = new Cart(cartElem);
     },
   };
   app.init();
