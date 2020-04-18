@@ -87,7 +87,7 @@
     cartProduct: Handlebars.compile(document.querySelector(select.templateOf.cartProduct).innerHTML),
     // CODE ADDED END
   };
-  //***************************** CLASS PRODUCT ********************************* */
+
   class Product{
 
     constructor(id, data){
@@ -138,7 +138,7 @@
       /* find the clickable trigger (the element that should react to clicking) */
       const clickableTriggers = thisProduct.accordionTrigger;
       /* START: click event listener to trigger */
-      clickableTriggers.addEventListener('click', function (event) {
+      clickableTriggers.addEventListener('click', function(event){
         /* prevent default action for event */
         event.preventDefault();
         /* toggle active class on element of thisProduct */
@@ -267,7 +267,7 @@
       });
     }
   }
-  //***************************** WIDGET ILOSCI ********************************* */
+
   class AmountWidget{
 
     constructor(element){
@@ -275,11 +275,8 @@
 
       thisWidget.getElements(element);
       thisWidget.value = settings.amountWidget.defaultValue;
-      console.log(thisWidget.value);
       thisWidget.setValue(thisWidget.input.value); //wywolanie metody setValue
       thisWidget.initActions(); //wywolanie metody initActions
-      // console.log('AmountWidget:', thisWidget);
-      // console.log('constructor arguments:\n', element);
     }
 
     getElements(element){
@@ -320,7 +317,7 @@
         event.preventDefault();
         thisWidget.setValue(thisWidget.value + 1);
       });
-      console.log(thisWidget);
+      // console.log(thisWidget);
     }
 
     announce(){
@@ -333,7 +330,37 @@
 
   }
 
-  //***************************** APP ********************************* */
+  class Cart{
+    constructor(element){
+      const thisCart = this; //tworzymy stala w ktorej zapisujemy obiekt this
+
+      thisCart.products = []; //tworzymy tablice do przechowywania produktow dodanych do koszyka
+
+      thisCart.getElements(element);
+      thisCart.initActions();
+
+      console.log('new Cart: ', thisCart);
+    }
+
+    getElements(element){
+      const thisCart = this;
+
+      thisCart.dom = {}; //tworzymy obiekt thisCart.dom do przechowywania wszystkich elementow DOM wyszukanych w komponencie koszyka
+      thisCart.dom.wrapper = element;
+      thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
+
+    }
+
+    initActions(){
+      const thisCart = this;
+
+      thisCart.dom.toggleTrigger.addEventListener('click', function(){
+        thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
+      });
+
+    }
+  }
+
   const app = {
     initMenu: function(){
       const thisApp = this;
@@ -348,6 +375,12 @@
       thisApp.data = dataSource;
     },
 
+    initCart: function(){
+      const thisApp = this;
+      const cartElem = document.querySelector(select.containerOf.cart);
+      thisApp.cart = new Cart(cartElem);
+    },
+
     init: function(){
       const thisApp = this;
       // console.log('*** App starting ***');
@@ -358,8 +391,8 @@
 
       thisApp.initData();
       thisApp.initMenu();
+      thisApp.initCart();
     },
   };
-
   app.init();
 }
