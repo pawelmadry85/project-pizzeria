@@ -104,8 +104,7 @@
       thisProduct.processOrder();
 
     }
-    //************************************************************** */
-    //Metoda, ktora bedzie renderowac (tworzyc) kod pojedynczego produktu na stronie.
+
     renderInMenu(){
       const thisProduct = this;
 
@@ -123,8 +122,7 @@
 
 
     }
-    //************************************************************** */
-    //Metoda odnajdujaca elementy w kontenerze produktu. Spis tresci.
+
     getElements(){
       const thisProduct = this;
 
@@ -136,8 +134,7 @@
       thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper); //Pojedynczy element o slektorze '.product__images'
       thisProduct.amountWidgetElem = thisProduct.element.querySelector(select.menuProduct.amountWidget); //Pojedynczy element pasujacy do selektora '.widget-amount'
     }
-    //************************************************************** */
-    //Metoda, ktora po kliknieciu bedzie pokazywala opcje produktu, wybor ilosci i button dodaj do koszyka.
+
     initAccordian(){
       const thisProduct = this;
       /* find the clickable trigger (the element that should react to clicking) */
@@ -164,9 +161,7 @@
       });
       // console.log(clickableTriggers);
     }
-    //************************************************************** */
 
-    //Metoda reagujaca na zmiany w formularzu zamowienia produktu
     initOrderForm(){
       const thisProduct = this;
       // console.log('initOrderForm', thisProduct);
@@ -188,8 +183,7 @@
         thisProduct.addToCart();
       });
     }
-    //************************************************************** */
-    //Metoda sluzaca do przeliczania / obliczania wartosci zamowionego produktu.
+
     processOrder(){
       const thisProduct = this;
 
@@ -275,7 +269,7 @@
       // thisProduct.priceElem.textContent = price;
       thisProduct.priceElem.innerHTML = thisProduct.price;
     }
-    //************************************************************** */
+
     initAmountWidget(){
       const thisProduct = this;
 
@@ -287,7 +281,7 @@
         thisProduct.processOrder();
       });
     }
-    //************************************************************** */
+
     addToCart(){
       const thisProduct = this;
 
@@ -354,7 +348,9 @@
       const thisWidget = this;
 
       // storzenie wslasnego eventu 'updated'
-      const event = new Event('updated');
+      const event = new CustomEvent('updated', {
+        bubbles: true
+      });
       thisWidget.element.dispatchEvent(event);
     }
 
@@ -365,6 +361,9 @@
       const thisCart = this; //tworzymy stala w ktorej zapisujemy obiekt this
 
       thisCart.products = []; //tworzymy tablice do przechowywania produktow dodanych do koszyka
+
+      thisCart.deliveryFee = settings.cart.defaultDeliveryFee; //przypisanie wartosci podatku z obiektu settings
+      // console.log('Fee: ', thisCart.deliveryFee);
 
       thisCart.getElements(element);
       thisCart.initActions();
@@ -379,13 +378,29 @@
       thisCart.dom.wrapper = element;
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger); //wyszukanie elementu ktoremu dodajemy listener eventu click czyli dodajemy selektor aktive
       thisCart.dom.productList = thisCart.dom.wrapper.querySelector(select.cart.productList); //wyszukanie listy produktow w koszyku
+
+
+      thisCart.renderTotalsKeys = ['totalNumber', 'totalPrice', 'subtotalPrice', 'deliveryFee'];
+
+      for(let key of thisCart.renderTotalsKeys){
+        thisCart.dom[key] = thisCart.dom.wrapper.querySelectorAll(select.cart[key]);
+        // console.log(thisCart.dom[key]);
+      }
     }
 
     initActions(){
       const thisCart = this;
 
-      thisCart.dom.toggleTrigger.addEventListener('click', function(){
+      thisCart.dom.toggleTrigger.addEventListener('click', function(){ //nasluchujemy na klikniecie na koszyk i dodajemy klasie selektor active
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
+      });
+
+      thisCart.dom.productList.addEventListener('updated', function(){ //nasluchujemy na liscie produktow, w ktorej umieszczamy produkty, w ktorych znajduje sie widget liczby sztuk, ktory generuje ten event, dzieki wlasciwosci bubbles "uslyszymy" go na tej liscie i mozemy wtedy wykonac metode update
+        thisCart.update();
+      });
+
+      thisCart.dom.productList.addEventListener('remove', function(){
+        thisCart.remove(event.detail.cartProduct);
       });
     }
 
@@ -403,8 +418,47 @@
       thisCart.dom.productList.appendChild(generatedDOM);
 
       thisCart.products.push(new CartProduct(menuProduct, generatedDOM)); //tworzenie nowej instancji klasy new CartProduct oraz dodanie jej do tablicy thisCart.products
-      console.log('thisCart.products: ', thisCart.products);
+      // console.log('thisCart.products: ', thisCart.products);
 
+      thisCart.update();
+
+    }
+
+    update(){
+      const thisCart = this;
+
+      thisCart.totalNumber = 0;
+      thisCart.subtotalPrice = 0;
+
+      for (let thisCartProduct of thisCart.products){
+        thisCart.subtotalPrice = thisCart.subtotalPrice + thisCartProduct.price;
+        // console.log('subtotalPrice: ', thisCart.subtotalPrice);
+
+        thisCart.totalNumber = thisCart.totalNumber + thisCartProduct.amount;
+        // console.log('totalNumber: ',thisCart.totalNumber);
+      }
+
+      thisCart.totalPrice = thisCart.subtotalPrice + thisCart.deliveryFee; //cena koncowa z podatkiem
+      // console.log('totalPrice: ', thisCart.totalPrice);
+
+      for(let key of thisCart.renderTotalsKeys){
+        for(let elem of thisCart.dom[key]){
+          elem.innerHTML = thisCart[key];
+        }
+      }
+    }
+
+    remove(cartProduct){
+      const thisCart = this;
+
+      const index = thisCart.products.indexOf(cartProduct);
+      thisCart.products.splice(index,1);
+
+      console.log(thisCart.products);
+
+      cartProduct.dom.wrapper.remove();
+
+      thisCart.update();
     }
   }
 
@@ -421,6 +475,7 @@
 
       thisCartProduct.getElements(element);
       thisCartProduct.initAmountWidget();
+      thisCartProduct.initActions();
       // console.log(thisCartProduct);
     }
 
@@ -447,12 +502,36 @@
 
         thisCartProduct.amount = thisCartProduct.amountWidget.value;
         thisCartProduct.price = thisCartProduct.priceSingle * thisCartProduct.amount;
-        thisCartProduct.dom.price.innerHTML = thisCartProduct.price;
-        console.log(thisCartProduct.dom.price); //wstawieni ceny bedacej wynikiem mnozenia priceSingle i amount
-
+        thisCartProduct.dom.price.innerHTML = thisCartProduct.price; //wstawienie ceny bedacej wynikiem mnozenia priceSingle i amount
       });
     }
 
+    remove(){
+      const thisCartProduct = this;
+
+      const event = new CustomEvent('remove',{ //wykorzystujemy CustomEvent 'remove' z wlasciwoscia bubbles oraz detail z odwolaniem do instancji dla ktorej kliknieto guzik usuwania
+        bubbles: true,
+        detail: {
+          cartProduct: thisCartProduct,
+        },
+      });
+      // console.log(event);
+
+      thisCartProduct.dom.wrapper.dispatchEvent(event);
+    }
+
+    initActions(){
+      const thisCartProduct = this;
+
+      thisCartProduct.dom.edit.addEventListener('click', function(event){
+        event.preventDefault();
+      });
+
+      thisCartProduct.dom.remove.addEventListener('click', function(event){
+        event.preventDefault();
+        thisCartProduct.remove();
+      });
+    }
   }
 
   const app = {
