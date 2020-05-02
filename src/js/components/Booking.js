@@ -29,7 +29,7 @@ class Booking {
     thisBooking.dom.datePicker = element.querySelector(select.widgets.datePicker.wrapper);
 
     thisBooking.dom.hourPicker = element.querySelector(select.widgets.hourPicker.wrapper);
-    console.log(thisBooking.dom.hourPicker);
+    // console.log(thisBooking.dom.hourPicker);
 
   }
 
