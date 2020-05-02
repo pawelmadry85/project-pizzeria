@@ -1,6 +1,7 @@
 import {settings, select, classNames} from './settings.js';
 import Product from './components/Product.js';
 import Cart from './components/Cart.js';
+import Booking from './components/Booking.js';
 
 
 const app = {
@@ -91,6 +92,7 @@ const app = {
     thisApp.initData();
     thisApp.initCart();
     thisApp.initPages();
+    thisApp.initBooking();
   },
 
   initCart: function(){
@@ -103,6 +105,12 @@ const app = {
     thisApp.productList.addEventListener('add-to-cart', function(event){
       app.cart.add(event.detail.product);
     });
+  },
+
+  initBooking: function(){
+    const widgetContainer = document.querySelector(select.containerOf.booking); //znajdujemy kontener widgetu do rezerwacji stron
+
+    new Booking(widgetContainer); //tworzymy nowa instacje klasy Booking ktorej przekazujemy kontener widgetu
   },
 };
 app.init();
