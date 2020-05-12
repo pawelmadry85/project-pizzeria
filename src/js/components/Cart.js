@@ -7,14 +7,10 @@ class Cart{
     const thisCart = this; //tworzymy stala w ktorej zapisujemy obiekt this
 
     thisCart.products = []; //tworzymy tablice do przechowywania produktow dodanych do koszyka
-
-    thisCart.deliveryFee = settings.cart.defaultDeliveryFee; //przypisanie wartosci podatku z obiektu settings
-    // console.log('Fee: ', thisCart.deliveryFee);
+    thisCart.deliveryFee = settings.cart.defaultDeliveryFee;
 
     thisCart.getElements(element);
     thisCart.initActions();
-
-    // console.log('new Cart: ', thisCart);
   }
 
   getElements(element){
@@ -22,11 +18,11 @@ class Cart{
 
     thisCart.dom = {}; //tworzymy obiekt thisCart.dom do przechowywania wszystkich elementow DOM wyszukanych w komponencie koszyka
     thisCart.dom.wrapper = element;
-    thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger); //wyszukanie elementu ktoremu dodajemy listener eventu click czyli dodajemy selektor aktive
+    thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
     thisCart.dom.productList = thisCart.dom.wrapper.querySelector(select.cart.productList); //wyszukanie listy produktow w koszyku
     thisCart.dom.form = thisCart.dom.wrapper.querySelector(select.cart.form);
-    thisCart.dom.phone = thisCart.dom.wrapper.querySelector(select.cart.phone); //dodanie do metody getElements wlasciwosci dla inputow na numer tel.
-    thisCart.dom.address = thisCart.dom.wrapper.querySelector(select.cart.address); //dodanie do metody getElements wlasciwosci dla inputow na adres
+    thisCart.dom.phone = thisCart.dom.wrapper.querySelector(select.cart.phone);
+    thisCart.dom.address = thisCart.dom.wrapper.querySelector(select.cart.address);
 
     thisCart.renderTotalsKeys = ['totalNumber', 'totalPrice', 'subtotalPrice', 'deliveryFee'];
 
@@ -57,46 +53,6 @@ class Cart{
     });
   }
 
-  sendOrder(){
-
-    const thisCart = this;
-
-    const url = settings.db.url + '/' + settings.db.order;
-
-    const payload = {
-      address: thisCart.dom.address.value,
-      phone: thisCart.dom.phone.value,
-      totalNumber: thisCart.totalNumber,
-      subtotalPrice: thisCart.subtotalPrice,
-      totalPrice: thisCart.totalPrice,
-      deliveryFee: thisCart.deliveryFee,
-      products: [],
-    };
-
-    for(let singleProduct of thisCart.products){
-      const singleProductGetData = singleProduct.getData(); //wynik zwracany przez metode getData dla singleProduct
-
-      console.log(singleProductGetData);
-
-      payload.products.push(singleProductGetData); //dodanie wyniku z singleProductGetData do tablicy payload.products
-    }
-
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    };
-
-    fetch(url, options)
-      .then(function(response){
-        return response.json();
-      }).then(function(parsedResponse){
-        console.log('parsedResponse ', parsedResponse);
-      });
-  }
-
   add(menuProduct){
     const thisCart = this;
 
@@ -123,12 +79,9 @@ class Cart{
     thisCart.totalNumber = 0;
     thisCart.subtotalPrice = 0;
 
-    for (let thisCartProduct of thisCart.products){
-      thisCart.subtotalPrice = thisCart.subtotalPrice + thisCartProduct.price;
-      // console.log('subtotalPrice: ', thisCart.subtotalPrice);
-
-      thisCart.totalNumber = thisCart.totalNumber + thisCartProduct.amount;
-      // console.log('totalNumber: ',thisCart.totalNumber);
+    for (let product of thisCart.products) {
+      thisCart.subtotalPrice += product.price;
+      thisCart.totalNumber += product.amount;
     }
 
     thisCart.totalPrice = thisCart.subtotalPrice + thisCart.deliveryFee; //cena koncowa z podatkiem
@@ -145,13 +98,55 @@ class Cart{
     const thisCart = this;
 
     const index = thisCart.products.indexOf(cartProduct);
+    
     thisCart.products.splice(index,1);
 
-    console.log(thisCart.products);
+    // console.log(thisCart.products);
 
     cartProduct.dom.wrapper.remove();
 
     thisCart.update();
+  }
+
+  sendOrder(){
+
+    const thisCart = this;
+
+    const url = settings.db.url + '/' + settings.db.order;
+
+    const payload = {
+      address: thisCart.dom.address.value,
+      phone: thisCart.dom.phone.value,
+      totalNumber: thisCart.totalNumber,
+      subtotalPrice: thisCart.subtotalPrice,
+      totalPrice: thisCart.totalPrice,
+      deliveryFee: thisCart.deliveryFee,
+      products: [],
+    };
+
+    // console.log('totalPrice', payload.totalPrice);
+
+    for (let product of thisCart.products) {
+      product.getData();
+      delete product.dom;
+      delete product.amountWidget;
+      payload.products.push(product);
+    }
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    fetch(url, options)
+      .then(function(response){
+        return response.json();
+      }).then(function(parsedResponse){
+        console.log('parsedResponse ', parsedResponse);
+      });
   }
 }
 

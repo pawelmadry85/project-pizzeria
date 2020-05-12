@@ -1,0 +1,43 @@
+.home-container {
+  max-width: 700px;
+  margin: 42px auto;
+  padding: 50px 20px;
+  background-color: white;
+  border-radius: 6px;
+}
+
+.info {
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+}
+
+.info-box-1 {
+  margin-right: 1%;
+  border: 1px solid gold;
+  order: 1;
+  width: 45%;
+  height: 200px;
+  border-radius: 6px;
+}
+
+.info-box-2 {
+  margin-left: 1%;
+  border: 1px solid gold;
+  order: 2;
+  width: 45%;
+  height: 200px;
+  border-radius: 6px;
+}
+
+.info-box-3 {
+  margin-top: 10px;
+  border: 1px solid black;
+  order: 3;
+  width: 92%;
+  height: 200px;
+  border-radius: 6px;
+}

@@ -5,38 +5,33 @@ class CartProduct {
   constructor(menuProduct, element){
     const thisCartProduct = this;
 
+    thisCartProduct.getElements(element);
+    thisCartProduct.initAmountWidget();
+    thisCartProduct.initActions();
+
     thisCartProduct.id = menuProduct.id;
     thisCartProduct.name = menuProduct.name;
     thisCartProduct.price = menuProduct.price;
     thisCartProduct.priceSingle = menuProduct.priceSingle;
     thisCartProduct.amount = menuProduct.amount;
     thisCartProduct.params = JSON.parse(JSON.stringify(menuProduct.params));
-
-    thisCartProduct.getElements(element);
-    thisCartProduct.initAmountWidget();
-    thisCartProduct.initActions();
-    // console.log(thisCartProduct);
   }
 
   getElements(element){
     const thisCartProduct = this;
 
     thisCartProduct.dom = {};
-
     thisCartProduct.dom.wrapper = element;
-    thisCartProduct.dom.amountWidget = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.amountWidget);
-    thisCartProduct.dom.price = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.price);
-    thisCartProduct.dom.edit = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.edit);
-    thisCartProduct.dom.remove = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.remove);
+    thisCartProduct.dom.amountWidget = element.querySelector(select.cartProduct.amountWidget);
+    thisCartProduct.dom.price = element.querySelector(select.cartProduct.price);
+    thisCartProduct.dom.edit = element.querySelector(select.cartProduct.edit);
+    thisCartProduct.dom.remove = element.querySelector(select.cartProduct.remove);
   }
 
   initAmountWidget(){
     const thisCartProduct = this;
 
     thisCartProduct.amountWidget = new AmountWidget(thisCartProduct.dom.amountWidget);
-
-    // console.log(thisProduct.amountWidget);
-
     thisCartProduct.dom.amountWidget.addEventListener('updated', function(){
 
       thisCartProduct.amount = thisCartProduct.amountWidget.value;
@@ -48,7 +43,7 @@ class CartProduct {
   remove(){
     const thisCartProduct = this;
 
-    const event = new CustomEvent('remove',{ //wykorzystujemy CustomEvent 'remove' z wlasciwoscia bubbles oraz detail z odwolaniem do instancji dla ktorej kliknieto guzik usuwania
+    const event = new CustomEvent('remove',{
       bubbles: true,
       detail: {
         cartProduct: thisCartProduct,
@@ -76,13 +71,12 @@ class CartProduct {
     const thisCartProduct = this;
 
     const productData = {
-      Ordered_Items: {
-        id: thisCartProduct.id,
-        amount: thisCartProduct.amount,
-        price: thisCartProduct.price,
-        priceSingle: thisCartProduct.priceSingle,
-        params: thisCartProduct.params,
-      }
+      id: thisCartProduct.id,
+      name: thisCartProduct.name,
+      price: thisCartProduct.price,
+      priceSingle: thisCartProduct.priceSingle,
+      amount: thisCartProduct.amount,
+      params: thisCartProduct.params,
     };
     return productData;
   }
