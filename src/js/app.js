@@ -1,3 +1,4 @@
+/* global $*/
 import {settings, select, classNames} from './settings.js';
 import Product from './components/Product.js';
 import Cart from './components/Cart.js';
@@ -5,6 +6,7 @@ import Booking from './components/Booking.js';
 
 
 const app = {
+
   initPages: function(){
     const thisApp = this;
 
@@ -15,6 +17,8 @@ const app = {
 
     let pageMatchingHash = thisApp.pages[0].id;
 
+    // console.log('thisApp.pages: ', thisApp.pages);
+
     for(let page of thisApp.pages){
       if(page.id == idFromHash){
         pageMatchingHash = page.id;
@@ -22,7 +26,7 @@ const app = {
       }
     }
 
-    thisApp.activatePage(pageMatchingHash); //wczytyanie pierwszej z podstron razem z jej id
+    thisApp.activatePage(pageMatchingHash); //wczytanie pierwszej z podstron razem z jej id
 
     for(let link of thisApp.navLinks){
       link.addEventListener('click', function(event){
@@ -47,13 +51,12 @@ const app = {
     /** add class "active" to matching pages, remove from non-matching */
     for(let page of thisApp.pages){
       page.classList.toggle(classNames.pages.active, page.id == pageId);
+      console.log('page: ', page);
     }
     /** add class "active" to matching links, remove from non-matching */
     for(let link of thisApp.navLinks){
-      link.classList.toggle(
-        classNames.nav.active,
-        link.getAttribute('href') == '#' + pageId
-      );
+      link.classList.toggle(classNames.nav.active, link.getAttribute('href') == '#' + pageId);
+      // console.log('link: ', link);
     }
   },
 
@@ -93,6 +96,7 @@ const app = {
     thisApp.initCart();
     thisApp.initPages();
     thisApp.initBooking();
+    thisApp.initCarousel();
   },
 
   initCart: function(){
@@ -112,6 +116,22 @@ const app = {
 
     new Booking(widgetContainer); //tworzymy nowa instacje klasy Booking ktorej przekazujemy kontener widgetu
   },
+
+  initCarousel() {
+    const thisApp = this;
+    $('.carousel').carousel({
+      interval: 3000
+    });
+
+    const logo = document.querySelector('.logo'); //klikniecie w logo odpala home
+
+    logo.addEventListener('click', function () {
+      thisApp.initPages();
+    });
+
+    // console.log('logo: ', logo);
+  }
+
 };
 app.init();
 

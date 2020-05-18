@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Pizzeria</title>
-  <link rel="stylesheet" href="vendor/range-slider.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link href="https://fonts.googleapis.com/css?family=Lato:400,300i,700%7COswald:300,500,700&amp;subset=latin-ext" rel="stylesheet">
   <link href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="/vendor/range-slider.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -20,11 +21,13 @@
           <h1 class="logo__title"><span>Mamma</span>Mia!</h1>
           <h2 class="logo__subtitle">the best homemade Italian food</h2>
         </div>
+
         <div class="main-nav">
           <a href="#home">Home</a>
           <a href="#order">Order</a>
           <a href="#booking">Booking</a>
         </div>
+
         <div id="cart" class="cart">
           <div class="cart__summary">
             <span class="cart__total-number">0</span>
@@ -63,18 +66,100 @@
   </header>
 
   <div id="pages">
-    <section id="home">
-      <div class="home-container">
-        <div class="info">
-          <div class="info-box-1">Info 1</div>
-          <div class="info-box-2">Info 2</div>
-          <div class="info-box-3">Info 3</div>
+    <section id="main-site">
+      <div class="main-wrapper container">
+
+        <div class="page-nav-content">
+          <a href="#order" id="page-nav-order">Order online
+            <p>Delicious food delivered to your door</p></a>
+          <a href="#booking" id="page-nav-booking">Book a table<p>Visit our place and enjoy your dinner</p></a>
         </div>
+
+        <div class="page-open-hours">
+          <p>Opening hours:</p>
+          <p class="page-open-date">tue-sun, 12pm - 12am</p>
+        </div>
+
+        <div class="carousel-wrapper">
+          <div class="quotes-photo">
+            <img src="./images/pizza-3.jpg" alt="">
+          </div>
+
+          <div class="bd-example">
+            <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+              <ol class="carousel-indicators">
+                <li data-target="#carouselExampleCaptions" data-slide-to="0" class="active"></li>
+                <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
+                <li data-target="#carouselExampleCaptions" data-slide-to="2"></li>
+              </ol>
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <h5>First slide label</h5>
+                  <p>Nulla vitae elit libero, a pharetra augue mollis interdum.Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                  <p class="author">-Lorem Ipsum</p>
+                </div>
+                <div class="carousel-item">
+                  <h5>Second slide label</h5>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                  <p class="author">-Lorem Ipsum</p>
+                </div>
+                <div class="carousel-item">
+                  <h5>Third slide label</h5>
+                  <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                  <p class="author">-Lorem Ipsum</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <a class="crousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+          </a>
+          <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+          </a>
+        </div>
+
+
+        <div class="gallery">
+          <div class="photo">
+            <img src="images/pizza-4.jpg" alt="">
+            <a href="#"><i class="fas fa-heart"></i></a>
+            <a href="#"><i class="fas fa-share-alt"></i></a>
+          </div>
+          <div class="photo">
+            <img src="images/pizza-5.jpg" alt="">
+            <a href="#"><i class="fas fa-heart"></i>tap to like this picture</a>
+            <a href="#"><i class="fas fa-share-alt"></i>click to share picture with friend</a>
+          </div>
+          <div class="photo">
+            <img src="images/pizza-6.jpg" alt="">
+            <a href="#"><i class="fas fa-heart"></i></a>
+            <a href="#"><i class="fas fa-share-alt"></i></a>
+          </div>
+          <div class="photo">
+            <img src="images/pizza-7.jpg" alt="">
+            <a href="#"><i class="fas fa-heart"></i></a>
+            <a href="#"><i class="fas fa-share-alt"></i></a>
+          </div>
+          <div class="photo">
+            <img src="images/pizza-8.jpg" alt="">
+            <a href="#"><i class="fas fa-heart"></i></a>
+            <a href="#"><i class="fas fa-share-alt"></i></a>
+          </div>
+          <div class="photo">
+            <img src="images/pizza-9.jpg" alt="">
+            <a href="#"><i class="fas fa-heart"></i></a>
+            <a href="#"><i class="fas fa-share-alt"></i></a>
+          </div>
+        </div>
+
+        <a href="#" id="insta-link">View more on instagram</a>
       </div>
     </section>
+    
     <section id="order">
       <div id="product-list" class="product-list container"></div>
     </section>
+    
     <section id="booking">
       <div class="booking-wrapper container"></div>
     </section>
@@ -256,6 +341,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.0/handlebars.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="vendor/range-slider.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   <script src="js/app.js" type="module"></script>
 </body>
 </html>
