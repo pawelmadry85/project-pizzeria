@@ -30,11 +30,14 @@ const app = {
 
     for(let link of thisApp.navLinks){
       link.addEventListener('click', function(event){
-        const clickedElement = this;
         event.preventDefault();
-
+        
+        const clickedElement = this;
+        
         /** get page id from href attribute */
         const id = clickedElement.getAttribute('href').replace('#', '');
+
+        // console.log('id', id);
 
         /** run thisApp.activatePage with that id */
         thisApp.activatePage(id);
@@ -51,7 +54,9 @@ const app = {
     /** add class "active" to matching pages, remove from non-matching */
     for(let page of thisApp.pages){
       page.classList.toggle(classNames.pages.active, page.id == pageId);
-      console.log('page: ', page);
+      
+      // console.log(`page: ${page.id} == ${pageId}`);
+
     }
     /** add class "active" to matching links, remove from non-matching */
     for(let link of thisApp.navLinks){

@@ -135,9 +135,14 @@ class Booking {
       }
 
       if (thisBooking.booked[date][hourBlock].indexOf(table) == -1) {
-        thisBooking.booked[date][hourBlock].push(table);
+
+        for (let tableItem of table) {
+          thisBooking.booked[date][hourBlock].push(tableItem);
+        }
       }
     }
+
+    console.log('tBbooked', thisBooking.booked);
   }
 
   updateDOM() {
@@ -168,9 +173,8 @@ class Booking {
       // dodanie listenera na klikniecie w stolik
       
       table.addEventListener('click', function () {
-        console.log('Stolik klikniety');
-  
         const tableChoosed = table.classList.contains(classNames.booking.tableBooked);
+        console.log('tableChoosed: ', tableChoosed);
         
         if (!tableChoosed) {
           table.classList.add(classNames.booking.tableBooked);
@@ -189,7 +193,7 @@ class Booking {
     const payload = {
       date: thisBooking.date,
       hour: utils.numberToHour(thisBooking.hour),
-      table: thisBooking.tableIsBooked,
+      table: thisBooking.tableIsBooked, //zrobic tablice z wszystkimi kliknietymi elementami
       duration: thisBooking.hoursAmount.value,
       ppl: thisBooking.peopleAmount.value,
       starters: [],
