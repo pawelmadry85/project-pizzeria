@@ -141,8 +141,7 @@ class Booking {
         }
       }
     }
-
-    console.log('tBbooked', thisBooking.booked);
+    // console.log('tBbooked', thisBooking.booked);
   }
 
   updateDOM() {
@@ -174,7 +173,7 @@ class Booking {
       
       table.addEventListener('click', function () {
         const tableChoosed = table.classList.contains(classNames.booking.tableBooked);
-        console.log('tableChoosed: ', tableChoosed);
+        // console.log('tableChoosed: ', tableChoosed);
         
         if (!tableChoosed) {
           table.classList.add(classNames.booking.tableBooked);
@@ -193,13 +192,17 @@ class Booking {
     const payload = {
       date: thisBooking.date,
       hour: utils.numberToHour(thisBooking.hour),
-      table: thisBooking.tableIsBooked, //zrobic tablice z wszystkimi kliknietymi elementami
+      table: [], //zrobic tablice z wszystkimi kliknietymi elementami
       duration: thisBooking.hoursAmount.value,
       ppl: thisBooking.peopleAmount.value,
       starters: [],
       address: thisBooking.dom.address.value,
       phone: thisBooking.dom.phone.value,
     };
+
+    for (let table of thisBooking.dom.tables) {
+      payload.table.push(table.value);
+    }
 
     for (let starter of thisBooking.dom.starters) {
       if (starter.checked == true) {
