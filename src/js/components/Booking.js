@@ -118,7 +118,7 @@ class Booking {
     thisBooking.updateDOM();
   }
 
-  makeBooked(date, hour, duration, table) {
+  makeBooked(date, hour, duration, tables) {
     const thisBooking = this;
 
     if (typeof thisBooking.booked[date] == 'undefined') {
@@ -134,10 +134,17 @@ class Booking {
         thisBooking.booked[date][hourBlock] = [];
       }
 
-      if (thisBooking.booked[date][hourBlock].indexOf(table) == -1) {
+      console.log(tables);
 
-        for (let tableItem of table) {
-          thisBooking.booked[date][hourBlock].push(tableItem);
+      for(let table of tables) {
+
+        if (thisBooking.booked[date][hourBlock].indexOf(table) == -1) {
+
+          console.log('table: ', table);
+
+          for (let tableItem of tables) {
+            thisBooking.booked[date][hourBlock].push(tableItem);
+          }
         }
       }
     }
@@ -201,7 +208,15 @@ class Booking {
     };
 
     for (let table of thisBooking.dom.tables) {
-      payload.table.push(table.value);
+      
+      let tableChoosed = table.classList.contains(classNames.booking.tableChoosed);
+
+     
+      if (tableChoosed) {
+        const tableId = table.getAttribute(settings.booking.tableIdAttribute);
+        // console.log('tableId: ', tableId);
+        payload.table.push(tableId);
+      }
     }
 
     for (let starter of thisBooking.dom.starters) {
@@ -223,6 +238,7 @@ class Booking {
         return response.json();
       }).then(function(parsedResponse){
         console.log('parsedResponse: ', parsedResponse);
+        console.log('payLoad', payload);
         thisBooking.makeBooked(payload.date, payload.hour, payload.table, payload.duration);
       });
   }
