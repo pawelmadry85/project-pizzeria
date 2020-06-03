@@ -134,13 +134,11 @@ class Booking {
         thisBooking.booked[date][hourBlock] = [];
       }
 
-      console.log(tables);
+      // console.log(tables);
 
       for(let table of tables) {
 
         if (thisBooking.booked[date][hourBlock].indexOf(table) == -1) {
-
-          console.log('table: ', table);
 
           for (let tableItem of tables) {
             thisBooking.booked[date][hourBlock].push(tableItem);
@@ -148,7 +146,6 @@ class Booking {
         }
       }
     }
-    // console.log('tBbooked', thisBooking.booked);
   }
 
   updateDOM() {
@@ -199,8 +196,8 @@ class Booking {
     const payload = {
       date: thisBooking.date,
       hour: utils.numberToHour(thisBooking.hour),
-      table: [], //zrobic tablice z wszystkimi kliknietymi elementami
       duration: thisBooking.hoursAmount.value,
+      table: [],
       ppl: thisBooking.peopleAmount.value,
       starters: [],
       address: thisBooking.dom.address.value,
@@ -208,13 +205,10 @@ class Booking {
     };
 
     for (let table of thisBooking.dom.tables) {
-      
       let tableChoosed = table.classList.contains(classNames.booking.tableChoosed);
 
-     
       if (tableChoosed) {
         const tableId = table.getAttribute(settings.booking.tableIdAttribute);
-        // console.log('tableId: ', tableId);
         payload.table.push(tableId);
       }
     }
@@ -239,7 +233,7 @@ class Booking {
       }).then(function(parsedResponse){
         console.log('parsedResponse: ', parsedResponse);
         console.log('payLoad', payload);
-        thisBooking.makeBooked(payload.date, payload.hour, payload.table, payload.duration);
+        thisBooking.makeBooked(payload.date, payload.hour, payload.duration, payload.table);
       });
   }
 }
