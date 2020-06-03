@@ -162,8 +162,10 @@ class Booking {
 
     for (let table of thisBooking.dom.tables) {
       let tableId = table.getAttribute(settings.booking.tableIdAttribute);
+
       if (!isNaN(tableId)) {
         tableId = parseInt(tableId);
+        console.log(tableId);
       }
 
       if (!allAvailable && thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableId)) {
@@ -173,11 +175,8 @@ class Booking {
         table.classList.remove(classNames.booking.tableChoosed);
       }
       
-      // dodanie listenera na klikniecie w stolik
-      
       table.addEventListener('click', function () {
         const tableChoosed = table.classList.contains(classNames.booking.tableBooked);
-        // console.log('tableChoosed: ', tableChoosed);
         
         if (!tableChoosed) {
           table.classList.add(classNames.booking.tableBooked);
@@ -232,7 +231,7 @@ class Booking {
         return response.json();
       }).then(function(parsedResponse){
         console.log('parsedResponse: ', parsedResponse);
-        console.log('payLoad', payload);
+        // console.log('payLoad', payload);
         thisBooking.makeBooked(payload.date, payload.hour, payload.duration, payload.table);
       });
   }
