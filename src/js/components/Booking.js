@@ -165,7 +165,7 @@ class Booking {
 
       if (!isNaN(tableId)) {
         tableId = parseInt(tableId);
-        console.log(tableId);
+        // console.log(tableId);
       }
 
       if (!allAvailable && thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableId)) {
@@ -207,8 +207,12 @@ class Booking {
       let tableChoosed = table.classList.contains(classNames.booking.tableChoosed);
 
       if (tableChoosed) {
-        const tableId = table.getAttribute(settings.booking.tableIdAttribute);
-        payload.table.push(tableId);
+        let tableId = table.getAttribute(settings.booking.tableIdAttribute);
+        
+        if (!isNaN(tableId)) {
+          tableId = parseInt(tableId);
+          payload.table.push(tableId);
+        }
       }
     }
 
@@ -231,7 +235,7 @@ class Booking {
         return response.json();
       }).then(function(parsedResponse){
         console.log('parsedResponse: ', parsedResponse);
-        // console.log('payLoad', payload);
+        console.log('payLoad', payload);
         thisBooking.makeBooked(payload.date, payload.hour, payload.duration, payload.table);
       });
   }
